@@ -3,10 +3,13 @@ var JsBuild3 = require("./tools/jsbuild"),
     Path = require('path'),
     Parallel = require('paralleljs');
 
-module.exports = function (configPath, modules, done_) {
+var CONSOLE = console;
+
+module.exports = function (configPath, modules, done_, logger_) {
     "use strict";
 
     var done = done_ || function () {};
+    var console = logger_ || CONSOLE;
 
     var CFG = new JsBuild3.Configuration(JSON.parse(fs.readFileSync(configPath)), configPath);
 
@@ -22,8 +25,6 @@ module.exports = function (configPath, modules, done_) {
         });
     }
     
-    console.info('To build: ' + toBuild.map(function (_) { return _.getName(); }).join(', '));
-
     toBuild = toBuild.map(function (M) {
         return {
             name: M.getName(),
@@ -33,6 +34,14 @@ module.exports = function (configPath, modules, done_) {
             configPath: configPath
         }
     });
+
+    if (!toBuild.length) {
+      console.info('Nothing to build');
+      done();
+      return ;
+    }
+
+    console.log('To build: ' + toBuild.map(function (_) { return _.name; }).join(', '));
 
     var p = new Parallel(toBuild);
 
@@ -58,10 +67,9 @@ module.exports = function (configPath, modules, done_) {
 
         data
             .filter(function (_) { return _; })
-            .forEach(function (_) { console.log(_); });
+            .forEach(function (_) { console.error(_); });
 
         console.info("done");
-        
         done();
     });
 };
