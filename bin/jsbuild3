@@ -1,0 +1,21 @@
+#! /usr/bin/env node
+// -*- js -*-
+
+"use strict";
+
+var ARGS = require("optimist")
+    .usage("$0 config")
+    .describe("config", "Specify an path to config file")
+    .default("config", "jsbuild.json")
+    .string("config")
+    .describe("modules", "Specify modules to build")
+    .string("modules")
+    .wrap(80)
+    .argv;
+
+var fs = require("fs"),
+    Path = require("path"),
+    JsBuild3 = require("../index");
+
+JsBuild3(ARGS.config, (ARGS.modules || '').split(','));
+

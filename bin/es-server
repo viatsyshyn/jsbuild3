@@ -1,0 +1,173 @@
+#!/usr/bin/env node
+
+var colors = require('colors'),
+    httpServer = require('http-server/lib/http-server'),
+    portfinder = require('portfinder'),
+    director = require('director'),
+    to5 = require('6to5'),
+    fs = require('fs'),
+    Jade = require('emp.ria-jade'),
+    argv = require('optimist')
+        .boolean('cors')
+        .argv;
+
+if (argv.h || argv.help) {
+    console.log([
+        "usage: http-server [path] [options]",
+        "",
+        "options:",
+        "  -p                 Port to use [8080]",
+        "  -a                 Address to use [0.0.0.0]",
+        "  -d                 Show directory listings [true]",
+        "  -i                 Display autoIndex [true]",
+        "  -e --ext           Default file extension if none supplied [none]",
+        "  -s --silent        Suppress log messages from output",
+        "  --cors             Enable CORS via the 'Access-Control-Allow-Origin' header",
+        "  -o                 Open browser window after staring the server",
+        "  -c                 Cache time (max-age) in seconds [3600], e.g. -c10 for 10 seconds.",
+        "                     To disable caching, use -c-1.",
+        "",
+        "  -S --ssl           Enable https.",
+        "  -C --cert          Path to ssl cert file (default: cert.pem).",
+        "  -K --key           Path to ssl key file (default: key.pem).",
+        "",
+        "  -h --help          Print this list and exit."
+    ].join('\n'));
+    process.exit();
+}
+
+var port = argv.p || parseInt(process.env.PORT, 10),
+    host = argv.a || '0.0.0.0',
+    log = (argv.s || argv.silent) ? (function () {}) : console.log,
+    ssl = !!argv.S,
+    requestLogger;
+
+if (!argv.s && !argv.silent) {
+    requestLogger = function(req) {
+        log('[%s] "%s %s" "%s"', (new Date).toUTCString(), req.method.cyan, req.url.cyan, req.headers['user-agent']);
+    }
+}
+
+if (!port) {
+    portfinder.basePort = 8080;
+    portfinder.getPort(function (err, port) {
+        if (err) throw err;
+        listen(port);
+    });
+} else {
+    listen(port);
+}
+
+var router = new director.http.Router();
+
+var RiaModuleFormatter = require('../lib/6to5/modules').ModuleFormatter;
+
+var sourcemaps = {};
+
+router.get(/.*\.js$/, function () {
+    this.res.writeHead(200, { 'Content-Type': 'application/javascript' });
+
+    var path = this.req.url.split('?').shift();
+    var content = fs.readFileSync('.' + path);
+
+    try {
+        console.info('Compiling ' + path);
+        delete sourcemaps[path];
+
+        var filename = path.split('/').pop();
+        var compiled = to5.transform(content, {
+            filename: filename,
+            experimental: true,
+            runtime: true,
+            sourceMap: true,
+            modules: RiaModuleFormatter
+        });
+        //console.info('Storing source map for ' + path + ': ' + compiled.map);
+        sourcemaps[path] = compiled.map;
+        this.res.end("//# sourceMappingURL=" + filename + ".map\n\n" + compiled.code); //
+    }catch(e) {
+        this.res.end('throw Error("' + e.stack +'");');
+    }
+});
+
+router.get(/.*\.js\.map$/, function () {
+    this.res.writeHead(200, { 'Content-Type': 'text/json' });
+    var path = this.req.url.split('.map').shift();
+    try {
+        var data = JSON.stringify(sourcemaps[path]);
+        console.info('Sending map for ' + path);
+        this.res.end(data);
+    } catch (e) {
+        this.res.end('throw Error("' + e.stack +'");');
+    }
+});
+
+router.get(/.*\.jade$/, function () {
+    this.res.writeHead(200, { 'Content-Type': 'application/javascript' });
+    var path = this.req.url.split('?').shift();
+    var content = fs.readFileSync('.' + path);
+    try {
+        console.info('Compiling ' + path);
+        this.res.end('ria.__REQUIRE.setContent("' + this.req.url + '", '
+            + Jade.compile(content, {client: true, compileDebug: false, self: true, filename: path}).toString()
+            + ');');
+    } catch (e) {
+        this.res.end('throw Error("' + e.stack +'");');
+    }
+});
+
+function listen(port) {
+    var options = {
+        root: argv._[0],
+        cache: argv.c,
+        showDir: argv.d,
+        autoIndex: argv.i,
+        ext: argv.e || argv.ext,
+        logFn: requestLogger,
+
+        before: [
+            function (req, res) {
+                var found = router.dispatch(req, res);
+                if (!found) {
+                    res.emit('next');
+                }
+            }
+        ]
+    };
+
+    if (argv.cors) {
+        options.headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+        };
+    }
+
+    if (argv.S) {
+        options.https = {
+            cert: argv.C || 'cert.pem',
+            key: argv.K || 'key.pem'
+        };
+    }
+
+    var server = httpServer.createServer(options);
+    server.listen(port, host, function() {
+        var uri = [ssl ? 'https' : 'http', '://', host, ':', port].join('');
+        log('Starting up http-server, serving '.yellow
+        + server.root.cyan
+        + ((ssl) ? ' through'.yellow + ' https'.cyan : '')
+        + ' on: '.yellow
+        + uri.cyan);
+
+        log('Hit CTRL-C to stop the server');
+    });
+}
+
+if (process.platform !== 'win32') {
+    //
+    // Signal handlers don't work on Windows.
+    //
+    process.on('SIGINT', function () {
+        log('http-server stopped.'.red);
+        process.exit();
+    });
+}

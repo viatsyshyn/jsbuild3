@@ -1,0 +1,44 @@
+{
+  "name": "emp.ria-jsbuild3",
+  "title": "EMP RIA Jsbuild3",
+  "description": "EMP RIA build system",
+  "version": "0.0.0",
+  "homepage": "https://github.com/viatsyshyn/jsbuild3",
+  "author": {
+    "name": "Volodymyt Iatsyshyn",
+    "email": "viatsyshyn@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viatsyshyn/jsbuild3"
+  },
+  "bugs": {
+    "url": "https://github.com/viatsyshyn/jsbuild3/issues"
+  },
+  "license": "MIT",
+  "licenses": [{
+    "type": "MIT",
+    "url": "https://github.com/viatsyshyn/jsbuild3/blob/master/LICENSE"
+  }],
+  "main": "./index.js",
+  "bin": {
+    "jsbuild3": "./bin/jsbuild3"
+  },
+  "keywords": [
+    "emp.ria",
+    "javascript",
+    "library"
+  ],
+  "dependencies": {
+    "emp.ria-framework": "^0.1.12",
+    "optimist": "*",
+    "paralleljs": "^0.2.1",
+    "uglify-js": "*"
+  },
+  "scripts": {
+    "prepublish": "npm prune"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  }
+}
