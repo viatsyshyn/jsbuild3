@@ -49,8 +49,7 @@
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-exec": "^0.4.6",
-    "grunt-text-replace": "^0.4.0",
-    "emp.ria-jade": "^0.35.0"
+    "grunt-text-replace": "^0.4.0"
   },
   "peerDependencies": {
     "emp.ria-jade": "^0.35.0"
