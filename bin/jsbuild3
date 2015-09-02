@@ -13,9 +13,23 @@ var ARGS = require("optimist")
     .wrap(80)
     .argv;
 
-var fs = require("fs"),
-    Path = require("path"),
-    JsBuild3 = require("../index");
+var colors = require('colors');
 
-JsBuild3(ARGS.config, (ARGS.modules || '').split(','));
+function apply_color(color, args) {
+    if (!args) return [];
+
+    return [].slice.call(args).map(function (_) {
+        return typeof _ === 'string' ? color(_) : _;
+    })
+}
+
+var logger = {
+    info: function () { console.info.apply(console, apply_color(colors.cyan.bold.dim, arguments)); },
+    warn: function () { console.warn.apply(console, apply_color(colors.yellow.bold, arguments)); },
+    log: function () { console.log.apply(console, apply_color(colors.grey.dim, arguments)); },
+    debug: function () { console.log.apply(console, apply_color(colors.blue.dim, arguments)); },
+    error: function () { console.error.apply(console, apply_color(colors.red.bold, arguments)); }
+};
+
+require("../index")(ARGS.config, (ARGS.modules || '').split(','), null, logger);
 

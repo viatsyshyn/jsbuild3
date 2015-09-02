@@ -32,8 +32,8 @@
     "library"
   ],
   "dependencies": {
-    "emp.ria-framework": "^0.1.12",
-    "optimist": "*",
+    "colors": "^1.1.2",
+    "optimist": "^0.6.1",
     "paralleljs": "^0.2.1",
     "uglify-js": "*"
   },
@@ -44,6 +44,7 @@
     "node": ">= 0.10.0"
   },
   "devDependencies": {
+    "emp.ria-framework": "^0.1.13",
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "~0.4.0",
     "grunt-contrib-jshint": "~0.6.0",

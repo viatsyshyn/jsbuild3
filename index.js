@@ -1,5 +1,5 @@
 var fs = require('fs'),
-    Path = require('path'),
+    path = require('path'),
     Parallel = require('paralleljs');
 
 var CONSOLE = console;
@@ -10,12 +10,26 @@ module.exports = function (configPath, modules, done_, logger_) {
     var done = done_ || function () {};
     var console = logger_ || CONSOLE;
 
-    var JsBuild3 = require("./tools/jsbuild")(console);
+    var configPathBase = path.dirname(configPath);
+    var configJSON = JSON.parse(fs.readFileSync(configPath));
 
-    var CFG = new JsBuild3.Configuration(JSON.parse(fs.readFileSync(configPath)), configPath);
+    var configFrameworkPath = (configJSON.framework ? path.resolve(configPathBase, configJSON.framework) : ''),
+        requiredFrameworkPath = require('emp.ria-framework')._mypath;
+
+    var frameworkPath = configFrameworkPath || requiredFrameworkPath || path.resolve(configPathBase, 'node_modules/emp.ria-framework');
+
+    if (!frameworkPath) {
+        console.error('Please specify framework path in config or npm install emp.ria-framework');
+        done(false);
+        return ;
+    }
+
+    var JsBuild3 = require("./tools/jsbuild")(console, frameworkPath);
+
+    var CFG = new JsBuild3.Configuration(configJSON, configPath);
 
     for (var plugin in CFG.getPlugins()) {
-        console.info(plugin.path);
+        console.log(plugin.path);
     }
 
     var MODULES = modules.filter(function (_) { return _ });
@@ -30,14 +44,16 @@ module.exports = function (configPath, modules, done_, logger_) {
         return {
             name: M.getName(),
             inFile: M.getInFile() || M.getAppClass(),
-            outFile: Path.resolve(CFG.getBasePath() + M.getOutFile()),
+            outFile: path.resolve(CFG.getBasePath() + M.getOutFile()),
             appClass: M.getAppClass(),
             configPath: configPath
         }
     });
 
+    console.log('Framework path: ' + frameworkPath);
+
     if (!toBuild.length) {
-      console.info('Nothing to build');
+      console.warn('Nothing to build');
       done();
       return ;
     }
@@ -48,9 +64,10 @@ module.exports = function (configPath, modules, done_, logger_) {
 
     p.map(function (data) {
         console.info('Compile ' + data.name);
+        console.log('Framework path: ' + frameworkPath);
         try {
             var configPath = data.configPath;
-            var JsBuild3 = require("../../../tools/jsbuild")(console);
+            var JsBuild3 = require("../../../tools/jsbuild")(console, frameworkPath);
             var fs = require('fs');
 
             var CFG = new JsBuild3.Configuration(JSON.parse(fs.readFileSync(configPath)), configPath);

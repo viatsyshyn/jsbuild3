@@ -1,5 +1,6 @@
 {
   "version": "3.0",
+  "framework": "../node_modules/emp.ria-framework",
   "options": { },
   "modules": []
 }

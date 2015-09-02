@@ -4,7 +4,7 @@ var vm = require("vm");
 var sys = require("util");
 var CONSOLE = console;
 
-module.exports = function (console) {
+module.exports = function (console, frameworkPath) {
     var JsBuild3 = vm.createContext({
         sys: sys,
         console: console || CONSOLE,
@@ -32,26 +32,26 @@ module.exports = function (console) {
     ([
         "../lib/config.js",
         "../lib/jsbuild3.js",
-        "../node_modules/emp.ria-framework/base/0.common.js",
-        "../node_modules/emp.ria-framework/base/5.annotations.js",
-        "../node_modules/emp.ria-framework/base/5.delegates.js",
-        "../node_modules/emp.ria-framework/base/5.enum.js",
-        "../node_modules/emp.ria-framework/base/5.identifier.js",
-        "../node_modules/emp.ria-framework/base/6.interface.js",
-        "../node_modules/emp.ria-framework/base/8.class.js",
-        "../node_modules/emp.ria-framework/base/9.arrayof.js",
-        "../node_modules/emp.ria-framework/base/9.classof.js",
-        "../node_modules/emp.ria-framework/base/9.exception.js",
-        "../node_modules/emp.ria-framework/base/9.implementerof.js",
-        "../node_modules/emp.ria-framework/syntax/type-hints.js",
+        frameworkPath + "/base/0.common.js",
+        frameworkPath + "/base/5.annotations.js",
+        frameworkPath + "/base/5.delegates.js",
+        frameworkPath + "/base/5.enum.js",
+        frameworkPath + "/base/5.identifier.js",
+        frameworkPath + "/base/6.interface.js",
+        frameworkPath + "/base/8.class.js",
+        frameworkPath + "/base/9.arrayof.js",
+        frameworkPath + "/base/9.classof.js",
+        frameworkPath + "/base/9.exception.js",
+        frameworkPath + "/base/9.implementerof.js",
+        frameworkPath + "/syntax/type-hints.js",
         "../lib/syntax/tokenizer.js",
-        "../node_modules/emp.ria-framework/syntax/registry.js",
-        "../node_modules/emp.ria-framework/syntax/parser2.js",
-        "../node_modules/emp.ria-framework/syntax/annotations.js",
-        "../node_modules/emp.ria-framework/syntax/class.js",
-        "../node_modules/emp.ria-framework/syntax/delegate.js",
-        "../node_modules/emp.ria-framework/syntax/exception.js",
-        "../node_modules/emp.ria-framework/syntax/interface.js",
+        frameworkPath + "/syntax/registry.js",
+        frameworkPath + "/syntax/parser2.js",
+        frameworkPath + "/syntax/annotations.js",
+        frameworkPath + "/syntax/class.js",
+        frameworkPath + "/syntax/delegate.js",
+        frameworkPath + "/syntax/exception.js",
+        frameworkPath + "/syntax/interface.js",
         "../lib/syntax/compiler.js",
         "../lib/syntax/common.js",
         "../lib/syntax/ns.js",
@@ -70,7 +70,7 @@ module.exports = function (console) {
         "../lib/assets/json.js"
     ])
         .map(function (file) {
-            return path.join(path.dirname(fs.realpathSync(__filename)), file);
+            return path.resolve(__dirname, file);
         })
         .forEach(load_global);
 
