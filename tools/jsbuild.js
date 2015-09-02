@@ -2,30 +2,32 @@ var path = require("path");
 var fs = require("fs");
 var vm = require("vm");
 var sys = require("util");
+var CONSOLE = console;
 
-var JsBuild3 = vm.createContext({
-    sys           : sys,
-    console       : console,
-    require       : require,
-    Path          : path,
-    fs            : fs,
-    UglifyJS      : require("uglify-js"),
-    __CWD         : process.cwd()
-});
+module.exports = function (console) {
+    var JsBuild3 = vm.createContext({
+        sys: sys,
+        console: console || CONSOLE,
+        require: require,
+        Path: path,
+        fs: fs,
+        UglifyJS: require("uglify-js"),
+        __CWD: process.cwd()
+    });
 
-function load_global(file) {
-    file = path.resolve(path.dirname(module.filename), file);
-    try {
-        var code = fs.readFileSync(file, "utf8");
-        return vm.runInContext(code, JsBuild3, file);
-    } catch(ex) {
-        // XXX: in case of a syntax error, the message is kinda
-        // useless. (no location information).
-        sys.debug("ERROR in file: " + file + " / " + ex);
-        process.exit(1);
-        return null;
+    function load_global(file) {
+        file = path.resolve(path.dirname(module.filename), file);
+        try {
+            var code = fs.readFileSync(file, "utf8");
+            return vm.runInContext(code, JsBuild3, file);
+        } catch (ex) {
+            // XXX: in case of a syntax error, the message is kinda
+            // useless. (no location information).
+            console.error("ERROR in file: " + file + " / " + ex);
+            process.exit(1);
+            return null;
+        }
     }
-}
 
     ([
         "../lib/config.js",
@@ -66,21 +68,25 @@ function load_global(file) {
         "../lib/assets/jade.js",
         "../lib/assets/txt.js",
         "../lib/assets/json.js"
-        ])
-    .map(function(file){
+    ])
+        .map(function (file) {
             return path.join(path.dirname(fs.realpathSync(__filename)), file);
         })
-    .forEach(load_global);
+        .forEach(load_global);
 
-// XXX: perhaps we shouldn't export everything but heck, I'm lazy.
-/*for (var i in JsBuild3) {
-    if (JsBuild3.hasOwnProperty(i)) {
-        console.info('global exports: ', i);
-        exports[i] = JsBuild3[i];
-    }
-}*/
+    // XXX: perhaps we shouldn't export everything but heck, I'm lazy.
+    /*for (var i in JsBuild3) {
+     if (JsBuild3.hasOwnProperty(i)) {
+     console.info('global exports: ', i);
+     exports[i] = JsBuild3[i];
+     }
+     }*/
 
-exports.PluginConfiguration = JsBuild3.PluginConfiguration;
-exports.ModuleConfiguration = JsBuild3.ModuleConfiguration;
-exports.Configuration = JsBuild3.Configuration;
-exports.compile = JsBuild3.compile.bind(JsBuild3);
+    var exports = {};
+    exports.PluginConfiguration = JsBuild3.PluginConfiguration;
+    exports.ModuleConfiguration = JsBuild3.ModuleConfiguration;
+    exports.Configuration = JsBuild3.Configuration;
+    exports.compile = JsBuild3.compile.bind(JsBuild3);
+
+    return exports;
+};

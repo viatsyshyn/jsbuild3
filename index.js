@@ -1,5 +1,4 @@
-var JsBuild3 = require("./tools/jsbuild"),
-    fs = require('fs'),
+var fs = require('fs'),
     Path = require('path'),
     Parallel = require('paralleljs');
 
@@ -10,6 +9,8 @@ module.exports = function (configPath, modules, done_, logger_) {
 
     var done = done_ || function () {};
     var console = logger_ || CONSOLE;
+
+    var JsBuild3 = require("./tools/jsbuild")(console);
 
     var CFG = new JsBuild3.Configuration(JSON.parse(fs.readFileSync(configPath)), configPath);
 
@@ -24,7 +25,7 @@ module.exports = function (configPath, modules, done_, logger_) {
             return MODULES.indexOf(_.getName()) >= 0;
         });
     }
-    
+
     toBuild = toBuild.map(function (M) {
         return {
             name: M.getName(),
@@ -49,7 +50,7 @@ module.exports = function (configPath, modules, done_, logger_) {
         console.info('Compile ' + data.name);
         try {
             var configPath = data.configPath;
-            var JsBuild3 = require("../../../tools/jsbuild");
+            var JsBuild3 = require("../../../tools/jsbuild")(console);
             var fs = require('fs');
 
             var CFG = new JsBuild3.Configuration(JSON.parse(fs.readFileSync(configPath)), configPath);
