@@ -3,7 +3,7 @@
 JsBuild system for emp.ria framework
 
 [![Build Status](https://travis-ci.org/viatsyshyn/jsbuild3.png)](https://travis-ci.org/viatsyshyn/jsbuild3)
-[![NPM version](https://img.shields.io/npm/v/emp.ria-jsbuild3.svg?style=flat)](https://travis-ci.org/viatsyshyn/jsbuild3)
+[![NPM version](https://img.shields.io/npm/v/emp.ria-jsbuild3.svg?style=flat)](https://www.npmjs.com/package/emp.ria-jsbuild3)
 
 ## Getting Started
 
