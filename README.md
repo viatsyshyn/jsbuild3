@@ -14,7 +14,7 @@ npm install -g emp.ria-jsbuild3 --save-dev
 
 Once the package has been installed, you may use it fomr shell:
 
-Build jsbuild.json in curent folder
+Build jsbuild.json in current folder
 
 ```shell
 jsbuild3
