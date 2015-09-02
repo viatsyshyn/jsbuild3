@@ -34,7 +34,7 @@ jsbuild3 --modules ModuleA,ModuleB
 
 ## jsbuild.json example
 
-```json
+```js
 {
   "version": "3.0",
   "options": {
