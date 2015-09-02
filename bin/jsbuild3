@@ -24,10 +24,9 @@ function apply_color(color, args) {
 }
 
 var logger = {
-    info: function () { console.info.apply(console, apply_color(colors.cyan.bold.dim, arguments)); },
+    info: function () { console.info.apply(console, apply_color(colors.cyan.dim, arguments)); },
     warn: function () { console.warn.apply(console, apply_color(colors.yellow.bold, arguments)); },
     log: function () { console.log.apply(console, apply_color(colors.grey.dim, arguments)); },
-    debug: function () { console.log.apply(console, apply_color(colors.blue.dim, arguments)); },
     error: function () { console.error.apply(console, apply_color(colors.red.bold, arguments)); }
 };
 
