@@ -37,6 +37,7 @@ jsbuild3 --modules ModuleA,ModuleB
 ```js
 {
   "version": "3.0",
+  "framework": "/my/path/to/emp.ria-framework/",
   "options": {
     "uglifyjs": {
       "output": {
@@ -47,6 +48,27 @@ jsbuild3 --modules ModuleA,ModuleB
       },
       "mangle": {
       }
+    }
+  },
+  
+  "assets": {
+    // internal jade assets compiler
+    "jade": { 
+      "compiler": "emp.ria-jade", // compiler npm, must be installed seperatly
+      "options": { // jade compiler options
+        "client": true,
+        "compileDebug": false,
+        "self": true
+      }
+    },
+      
+    // internal txt and json assets compilers
+    "txt": {}, 
+    "json": {},
+      
+    // custom assets compiler
+    "custom-plugin": {
+      "path": "/path/to/custom/plugin.js" // relative to jsbuild.json, please use lib/assets/jade.js as an example
     }
   },
   

@@ -4,7 +4,7 @@ var vm = require("vm");
 var sys = require("util");
 var CONSOLE = console;
 
-module.exports = function (console, frameworkPath) {
+module.exports = function (console, frameworkPath, plugins_paths) {
     var JsBuild3 = vm.createContext({
         sys: sys,
         console: console || CONSOLE,
@@ -64,11 +64,8 @@ module.exports = function (console, frameworkPath) {
         "../lib/syntax/exception.js",
         "../lib/syntax/post.js",
         "../lib/require/deps.js",
-        "../lib/require/assets.js",
-        "../lib/assets/jade.js",
-        "../lib/assets/txt.js",
-        "../lib/assets/json.js"
-    ])
+        "../lib/require/assets.js"
+    ].concat(plugins_paths))
         .map(function (file) {
             return path.resolve(__dirname, file);
         })

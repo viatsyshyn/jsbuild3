@@ -13,6 +13,9 @@ module.exports = function (configPath, modules, done_, logger_) {
     var configPathBase = path.dirname(configPath);
     var configJSON = JSON.parse(fs.readFileSync(configPath));
 
+    if (configJSON.version != 3)
+        throw Error('Unsupported configuration file. Version: ' + config.version);
+
     var configFrameworkPath = (configJSON.framework ? path.resolve(configPathBase, configJSON.framework) : ''),
         requiredFrameworkPath = require('emp.ria-framework')._mypath;
 
@@ -24,13 +27,20 @@ module.exports = function (configPath, modules, done_, logger_) {
         return ;
     }
 
-    var JsBuild3 = require("./tools/jsbuild")(console, frameworkPath);
+    var plugins = (typeof configJSON.assets === 'object' ? configJSON.assets : null) || { // defaults
+        "jade": { "compiler": "emp.ria-jade", "options": { "client": true, "compileDebug": false, "self": true } },
+        "txt": {},
+        "json": {}
+    };
+
+    var plugins_paths = Object.keys(plugins).map(function (_) {
+        var cfg = plugins[_] || {};
+        return cfg.path ? path.resolve(configPathBase, cfg.path) : path.resolve(__dirname, 'lib/assets/' + _ + '.js');
+    });
+
+    var JsBuild3 = require("./tools/jsbuild")(console, frameworkPath, plugins_paths);
 
     var CFG = new JsBuild3.Configuration(configJSON, configPath);
-
-    for (var plugin in CFG.getPlugins()) {
-        console.log(plugin.path);
-    }
 
     var MODULES = modules.filter(function (_) { return _ });
     var toBuild = CFG.getModules();
