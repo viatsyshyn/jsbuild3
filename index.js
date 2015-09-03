@@ -56,7 +56,10 @@ module.exports = function (configPath, modules, done_, logger_) {
             inFile: M.getInFile() || M.getAppClass(),
             outFile: path.resolve(CFG.getBasePath() + M.getOutFile()),
             appClass: M.getAppClass(),
-            configPath: configPath
+            configPath: configPath,
+            frameworkPath: frameworkPath,
+            configJSON: configJSON,
+            plugins_paths: plugins_paths
         }
     });
 
@@ -74,13 +77,12 @@ module.exports = function (configPath, modules, done_, logger_) {
 
     p.map(function (data) {
         console.info('Compile ' + data.name);
-        console.log('Framework path: ' + frameworkPath);
+        console.log('Framework path: ' + data.frameworkPath);
         try {
-            var configPath = data.configPath;
-            var JsBuild3 = require("../../../tools/jsbuild")(console, frameworkPath);
+            var JsBuild3 = require("../../../tools/jsbuild")(console, data.frameworkPath, data.plugins_paths);
             var fs = require('fs');
 
-            var CFG = new JsBuild3.Configuration(JSON.parse(fs.readFileSync(configPath)), configPath);
+            var CFG = new JsBuild3.Configuration(data.configJSON, data.configPath);
             var M = CFG.getModules().filter(function(_) { return _.getName() == data.name; })[0];
             CFG.setModuleConfig(M);
 
