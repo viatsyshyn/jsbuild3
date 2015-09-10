@@ -38,7 +38,8 @@ module.exports = function (configPath, modules, done_, logger_) {
         return cfg.path ? path.resolve(configPathBase, cfg.path) : path.resolve(__dirname, 'lib/assets/' + _ + '.js');
     });
 
-    var JsBuild3 = require("./tools/jsbuild")(console, frameworkPath, plugins_paths);
+    var JsBuild3_tools_path = path.resolve(__dirname, "./tools/jsbuild");
+    var JsBuild3 = require(JsBuild3_tools_path)(console, frameworkPath, plugins_paths);
 
     var CFG = new JsBuild3.Configuration(configJSON, configPath);
 
@@ -59,7 +60,8 @@ module.exports = function (configPath, modules, done_, logger_) {
             configPath: configPath,
             frameworkPath: frameworkPath,
             configJSON: configJSON,
-            plugins_paths: plugins_paths
+            plugins_paths: plugins_paths,
+            JsBuild3_tools_path: JsBuild3_tools_path
         }
     });
 
@@ -79,7 +81,8 @@ module.exports = function (configPath, modules, done_, logger_) {
         console.info('Compile ' + data.name);
         console.log('Framework path: ' + data.frameworkPath);
         try {
-            var JsBuild3 = require("../../../tools/jsbuild")(console, data.frameworkPath, data.plugins_paths);
+            var JsBuild3_tools_path = data.JsBuild3_tools_path;
+            var JsBuild3 = require(JsBuild3_tools_path)(console, data.frameworkPath, data.plugins_paths);
             var fs = require('fs');
 
             var CFG = new JsBuild3.Configuration(data.configJSON, data.configPath);
