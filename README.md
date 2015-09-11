@@ -51,6 +51,10 @@ jsbuild3 --modules ModuleA,ModuleB
     }
   },
   
+  "libs": {
+    "ria": "/my/path/to/emp.ria-framework/"
+  },
+  
   "assets": {
     // internal jade assets compiler
     "jade": { 
