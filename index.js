@@ -16,10 +16,9 @@ module.exports = function (configPath, modules, done_, logger_) {
     if (configJSON.version != 3)
         throw Error('Unsupported configuration file. Version: ' + config.version);
 
-    var configFrameworkPath = (configJSON.framework ? path.resolve(configPathBase, configJSON.framework) : ''),
-        requiredFrameworkPath = require('emp.ria-framework')._mypath;
-
-    var frameworkPath = configFrameworkPath || requiredFrameworkPath || path.resolve(configPathBase, 'node_modules/emp.ria-framework');
+    var frameworkPath = (configJSON.framework ? path.resolve(configPathBase, configJSON.framework) : '')
+        || require('emp.ria-framework')._mypath
+        || path.resolve(configPathBase, 'node_modules/emp.ria-framework');
 
     if (!frameworkPath) {
         console.error('Please specify framework path in config or npm install emp.ria-framework');
