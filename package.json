@@ -35,7 +35,7 @@
     "colors": "^1.1.2",
     "optimist": "^0.6.1",
     "paralleljs": "^0.2.1",
-    "uglify-js": "*"
+    "uglify-js": "^2.8.29"
   },
   "scripts": {
     "prepublish": "npm prune"
