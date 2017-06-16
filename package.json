@@ -38,7 +38,7 @@
     "uglify-js": "^2.8.29"
   },
   "scripts": {
-    "prepublish": "npm prune"
+    "prepare": "npm prune"
   },
   "engines": {
     "node": ">= 0.10.0"
