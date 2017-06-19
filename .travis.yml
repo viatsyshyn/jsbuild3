@@ -2,8 +2,6 @@ language: node_js
 node_js:
 - 4
 sudo: false
-before_install:
-- npm install -g npm@next
 before_script:
 - npm install -g grunt-cli
 script:
@@ -13,6 +11,7 @@ before_deploy:
 - npm unpublish emp.ria-jsbuild3@$TRAVIS_TAG
 deploy:
   provider: npm
+  email: viatsyshyn@gmail.com
   api_key:
     secure: m2r4mZfsvfTKT3l+b+ACRtU2PDzcinwO2HVf1dj6nvaSjiKwCIK9z1zcihaQdekZAfjyT6Gmbk6xDlsXiPofTDflD6KxAk5e1P/aPKOXXd0GC//ysILWBQVB6u3kTsZwdSen+V7YKflduvCTkXsenY17HS+rjm7igXkc8CtHkRGzqfFlkRy7bOea0BtGS0Yuc65AunndVYP0kLaRZw9o4fx0aA+OroCJeyj3giTXJCXh+NxkkHTY1FKicUCWEW9+VuNpHik7WhXCQ1bMbKT2zJnFUnWJKeRs/nTeV2yBRWbptkD7mF2RQTXWfHmXrLeGfRpTS7LGzvxDoPBLzlECMuyvT4oDY/gSeJ/PZfOqZpJeb4i1Fnj0KjCOj+1ZT1vqbaoPR7kyH6OWbDg2D9IsX0ORSK2PLFq8WR8alDjqrsXbF5b0YOSgv/8O5Qsgiyg9uuGHZUfgvIQmEiSa/DHc41qA7hVCQxRoKway6Ag9SdZk2aOXcIuG3wxQ21J0fpm+2pTd/1+3FBz8dUMn07dabtjuiId2omF+ueQZiSVBxOPABz8KbDx9MpghY1HoTpwcPTGlFT4t+VqGj8k3N3P5yxk80G1WTO8zsTrRC2QAERkevgTYRn4cff5pwcbob45/zNZI1FKW4cnwEw8aJKom5D+OgxVdIFN/xsYFDBqRHXs=
   skip_cleanup: true
